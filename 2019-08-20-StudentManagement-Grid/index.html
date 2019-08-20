@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../ext-3.3.0-all/resources/css/ext-all.css">
+    <script src="../ext-3.3.0-all/adapter/ext/ext-base.js"></script>
+    <script src="../ext-3.3.0-all/ext-all.js"></script>
+    <script src="../ext-3.3.0-all/examples/ux/PagingMemoryProxy.js"></script>
+    <script src="js/main.js"></script>
+
+</head>
+
+<script type="text/javascript">
+
+    Ext.onReady(function () {
+
+
+        //name, class, sex, age, birthday, avatar.
+        var cm = new Ext.grid.ColumnModel([
+            sm,
+            new Ext.grid.RowNumberer(),
+            {header: 'name', dataIndex: 'name', sortable: true,editor:getEditor_TextField()},
+            {header: 'class', dataIndex: 'class',sortable: true,editor:getEditor_TextField()},
+            {header: 'sex', dataIndex: 'sex',editor:getEditor_TextField()},
+            {header: 'age', dataIndex: 'age',editor:getEditor_TextField()},
+            {header: 'birth', dataIndex: 'birthday',renderer:Ext.util.Format.dateRenderer('Y-m-d'),editor:getEditor_DateField()},
+            {header: 'avatar', dataIndex: 'avatar',editor:getEditor_TextField()}
+        ]);
+
+
+        var toolBar = new Ext.Toolbar([
+            '-',
+            {
+                text: 'Add',
+                handler: function () {addItem(grid)}
+            },
+            '-',
+            {
+                text: 'Delete',
+                handler: function () {delItem(grid)}
+            },
+            '-']
+        );
+
+
+        var bottomBar = new Ext.PagingToolbar({
+            pageSize: 6,
+            store:store,
+            displayInfo: true,
+            displayMsg: 'From {0} To {1} Record，Total:{2} Records',
+            emptyMsg: 'No Records'
+        });
+
+        const contextMenu=new Ext.menu.Menu({
+            items:[
+                {
+                    text:"Up",
+                    handler:function(){moveItemUp(grid)}
+                },{
+                    text:"Down",
+                    handler:function (){moveItemDown(grid)}
+                },{
+                    text:"First",
+                    handler:function(){moveItemToHead(grid)}
+                },{
+                    text:"Last",
+                    handler:function (){moveItemToBottom(grid)}
+                }
+            ]
+        });
+
+
+        var grid = new Ext.grid.EditorGridPanel({
+
+            title:'Student Management Grid Version',
+            width:650,
+            autoHeight: true,
+            renderTo: 'test',
+            store: store,
+            cm:cm,
+            sm:sm,
+            view: new Ext.grid.GroupingView(),
+            tbar: toolBar,
+            bbar: bottomBar
+
+        });
+
+
+        store.load({params: {start: 0, limit: 6}});
+
+
+        grid.on('contextmenu', function (e) {
+            e.preventDefault();
+            contextMenu.showAt(e.getXY())
+        });
+
+
+    })
+
+
+</script>
+
+<body>
+
+<div id="test" align="center"></div>
+
+</body>
+</html>
